@@ -1,0 +1,10 @@
+{
+  "name": "Slack",
+  "label": "Slack",
+  "description": "Provides actions to integrate with Slack",
+  "group": "",
+  "artifactName": "",
+  "packageVersion": "1.0.0",
+  "codeVersion": "",
+  "commands": []
+}

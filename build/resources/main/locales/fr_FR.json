@@ -1,0 +1,8 @@
+{
+  "hello.label": "saluer quelqu'un",
+  "hello.nodelabel": "salut",
+  "hello.description": "saluer",
+  "label" : "A2019DemoPackage",
+  "action2.label": "votre nom",
+  "description" : "Un template d'actions pour A2019"
+}

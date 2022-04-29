@@ -1,0 +1,8 @@
+{
+  "hello.label": "say hi to someone",
+  "hello.nodelabel": "hi",
+  "hello.description": "saying hi",
+  "label" : "Slack",
+  "action2.label": "Slack",
+  "description" : "Provides actions for integrating with Slack"
+}
