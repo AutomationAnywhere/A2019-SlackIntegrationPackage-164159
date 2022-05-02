@@ -64,6 +64,9 @@ public class InviteUser {
         if ("".equals(user.trim())) {
             throw new BotCommandException(MESSAGES.getString("emptyInputString", "user name"));
         }
+        if (!this.sessions.containsKey(sessionName)){
+            throw new BotCommandException(MESSAGES.getString("incorrectSession",sessionName));
+        }
         //Retrieve APIKey String that is passed as Session Object
         String token = (String) this.sessions.get(sessionName);
         channel=URLEncoder.encode(channel, StandardCharsets.UTF_8);

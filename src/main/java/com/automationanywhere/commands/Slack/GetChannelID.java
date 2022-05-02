@@ -1,10 +1,6 @@
 package com.automationanywhere.commands.Slack;
 
 import Utils.HTTPRequest;
-import com.automationanywhere.botcommand.data.Value;
-import static com.automationanywhere.commandsdk.model.AttributeType.*;
-import static com.automationanywhere.commandsdk.model.DataType.STRING;
-import com.automationanywhere.botcommand.data.impl.DictionaryValue;
 import com.automationanywhere.botcommand.data.impl.StringValue;
 import com.automationanywhere.botcommand.exception.BotCommandException;
 import com.automationanywhere.commandsdk.annotations.*;
@@ -12,17 +8,16 @@ import com.automationanywhere.commandsdk.annotations.rules.NotEmpty;
 import com.automationanywhere.commandsdk.i18n.Messages;
 import com.automationanywhere.commandsdk.i18n.MessagesFactory;
 import com.automationanywhere.commandsdk.model.AttributeType;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import com.automationanywhere.commandsdk.model.DataType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.util.Map;
+
+import static com.automationanywhere.commandsdk.model.AttributeType.TEXT;
+import static com.automationanywhere.commandsdk.model.DataType.STRING;
 
 //BotCommand makes a class eligible for being considered as an action.
 @BotCommand
@@ -56,6 +51,9 @@ public class GetChannelID {
             @Idx(index = "2", type = AttributeType.TEXT) @Pkg(label = "Channel Name", description = "e.g. mychannel - do not include '#', lower case only") @NotEmpty String channel
     ) throws IOException, ParseException {
 
+        if (!this.sessions.containsKey(sessionName)){
+            throw new BotCommandException(MESSAGES.getString("incorrectSession",sessionName));
+        }
         //Retrieve APIKey String that is passed as Session Object
         String token = (String) this.sessions.get(sessionName);
         String id = null;
