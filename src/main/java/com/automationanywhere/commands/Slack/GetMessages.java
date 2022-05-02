@@ -1,15 +1,8 @@
 package com.automationanywhere.commands.Slack;
 
-import Utils.HTTPRequest;
 import Utils.ParseResponse;
-import com.automationanywhere.botcommand.data.Value;
-import static com.automationanywhere.commandsdk.model.AttributeType.*;
-import static com.automationanywhere.commandsdk.model.DataType.STRING;
-
-import com.automationanywhere.botcommand.data.impl.DictionaryValue;
-import com.automationanywhere.botcommand.data.impl.ListValue;
-import com.automationanywhere.botcommand.data.impl.StringValue;
 import com.automationanywhere.botcommand.data.impl.TableValue;
+import com.automationanywhere.botcommand.data.model.Schema;
 import com.automationanywhere.botcommand.data.model.table.Row;
 import com.automationanywhere.botcommand.data.model.table.Table;
 import com.automationanywhere.botcommand.exception.BotCommandException;
@@ -18,20 +11,19 @@ import com.automationanywhere.commandsdk.annotations.rules.NotEmpty;
 import com.automationanywhere.commandsdk.i18n.Messages;
 import com.automationanywhere.commandsdk.i18n.MessagesFactory;
 import com.automationanywhere.commandsdk.model.AttributeType;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-
 import com.automationanywhere.commandsdk.model.DataType;
 import org.json.JSONException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.*;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static com.automationanywhere.commandsdk.model.AttributeType.TEXT;
+import static com.automationanywhere.commandsdk.model.DataType.STRING;
 
 //BotCommand makes a class eligible for being considered as an action.
 @BotCommand
@@ -75,18 +67,7 @@ public class GetMessages {
         }
         //Retrieve APIKey String that is passed as Session Object
         String token = (String) this.sessions.get(sessionName);
-        List<Row> messages = new ArrayList<>();
-        Table messagesOutput = new Table();
-        TableValue messagesTable = new TableValue();
-        channel = URLEncoder.encode(channel, StandardCharsets.UTF_8);
-
-        //String url = "https://slack.com/api/conversations.history?token="+token+"&channel="+channel+"&cursor=";
-        //String response = HTTPRequest.Request(url, "GET");
-        messages = ParseResponse.MessageHistory(token, messages, channel);
-
-        messagesOutput.setRows(messages);
-        messagesTable.set(messagesOutput);
-        return messagesTable;
+        return ParseResponse.MessageHistory(token, channel);
     }
     public void setSessions(Map<String, Object> sessions) {
         this.sessions = sessions;

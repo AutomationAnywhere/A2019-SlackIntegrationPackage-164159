@@ -2,7 +2,10 @@ package Utils;
 
 import com.automationanywhere.botcommand.data.Value;
 import com.automationanywhere.botcommand.data.impl.StringValue;
+import com.automationanywhere.botcommand.data.impl.TableValue;
+import com.automationanywhere.botcommand.data.model.Schema;
 import com.automationanywhere.botcommand.data.model.table.Row;
+import com.automationanywhere.botcommand.data.model.table.Table;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,7 +31,14 @@ public class ParseResponse {
         return post;
     }
 
-    public static List MessageHistory (String token, List messages, String channel) throws ParseException, IOException {
+    public static TableValue MessageHistory (String token, String channel) throws ParseException, IOException {
+        Table msgTable = new Table();
+        List<Row> msgTableRows = new ArrayList<>();
+        List<Schema> msgTableSchema = new ArrayList<>();
+        msgTableSchema.add(new Schema("Message Text"));
+        msgTableSchema.add(new Schema("Message Timestamp"));
+        msgTableSchema.add(new Schema("Message Type"));
+
         Boolean hasMore = null;
         String cursor = "";
         do {
@@ -37,31 +47,21 @@ public class ParseResponse {
             Object obj = new JSONParser().parse(response);
             JSONObject jsonObj = (JSONObject) obj;
             String result = jsonObj.get("ok").toString();
-            if (result.equals("true")) {
+            List<Value> messageRow = new ArrayList<>();
+            if(result.equals("false")){
+                String reason = jsonObj.get("error").toString();
+                messageRow.add(new StringValue("Action failed with error reason " + reason));
+                messageRow.add(new StringValue(GetCurrentTime.secondsSince1970().toString()));
+                messageRow.add(new StringValue("Error"));
+
+                msgTableRows.add(new Row(messageRow));
+            }
+            else if(result.equals("true")) {
                 hasMore = (Boolean) jsonObj.get("has_more");
                 JSONArray messagesList = (JSONArray) jsonObj.get("messages");
-                for (int i = 0; i < messagesList.size(); i++) {
-                    List<Value> rowValues = new ArrayList<>();
-                    JSONObject currentMessage = (JSONObject) messagesList.get(i);
-                    if ("".equals(currentMessage.get("text").toString())) {
-                        if (currentMessage.get("files") != null) {
-                            rowValues.add(new StringValue("Message includes file attachment with no text"));
-                        } else {
-                            rowValues.add(new StringValue("No text found in message"));
-                        }
-                    } else {
-                        rowValues.add(new StringValue(currentMessage.get("text").toString()));
-                    }
-                    rowValues.add(new StringValue(currentMessage.get("ts").toString()));
-                    Row currentRow = new Row(rowValues);
-                    messages.add(currentRow);
-                }
-            } else {
-                String reason = jsonObj.get("error").toString();
-                List<Value> row = new ArrayList<>();
-                row.add(new StringValue("Action failed with error reason " + reason));
-                Row currentRow = new Row(row);
-                messages.add(currentRow);
+                List<Row> currentPageRows = getMessages(messagesList);
+
+                msgTableRows.addAll(currentPageRows);
             }
             if(hasMore!=null && hasMore){
                 JSONObject metadata = (JSONObject) jsonObj.get("response_metadata");
@@ -69,9 +69,44 @@ public class ParseResponse {
             }
         }while(hasMore!=null && hasMore);
 
-        return messages;
+        msgTable.setRows(msgTableRows);
+        msgTable.setSchema(msgTableSchema);
+        return new TableValue(msgTable);
     }
 
+    public static List<Row> getMessages(JSONArray messagesList){
+        List<Row> currentPageRows = new ArrayList<>();
+
+        for (Object currentMessageObject : messagesList) {
+            List<Value> currentMessageRow = new ArrayList<>();
+            JSONObject currentMessage = (JSONObject) currentMessageObject;
+
+            String currentText = currentMessage.get("text").toString();
+            String currentTimestamp = currentMessage.get("ts").toString();
+            String currentMsgType = "";
+            if (currentMessage.get("files") != null &&
+                    "".equals(currentText)) {
+                //currentMessageRow.add(new StringValue("Message includes file attachment with no text"));
+                currentMessageRow.add(new StringValue(currentText));
+                currentMsgType="File";
+            }
+            else if ("".equals(currentText)) {
+                //currentMessageRow.add(new StringValue("No text found in message"));
+                currentMessageRow.add(new StringValue(currentText));
+                currentMsgType="Empty Text";
+            }
+            else {
+                currentMessageRow.add(new StringValue(currentText));
+                currentMsgType="Text";
+            }
+            currentMessageRow.add(new StringValue(currentTimestamp));
+            currentMessageRow.add(new StringValue(currentMsgType));
+            Row currentRow = new Row(currentMessageRow);
+            currentPageRows.add(currentRow);
+        }
+
+        return currentPageRows;
+    }
 
     public static List MessageHistoryStrings (String token, List messages, String channel) throws ParseException, IOException {
         Boolean hasMore;

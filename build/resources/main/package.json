@@ -4,8 +4,8 @@
     "description": "Provides actions to integrate with Slack",
     "group": "com.automationanywhere",
     "artifactName": "Slack",
-    "packageVersion": "1.0.0-20200814-095507",
-    "codeVersion": "1.0.0-20200814-095507",
+    "packageVersion": "1.0.0-20220502-225908",
+    "codeVersion": "1.0.0-20220502-225908",
     "commands": [
         {
             "name": "Archive Channel",
