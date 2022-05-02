@@ -58,6 +58,10 @@ public class GetUserID {
         if ("".equals(user.trim())) {
             throw new BotCommandException(MESSAGES.getString("emptyInputString", "channel"));
         }
+
+        if (!this.sessions.containsKey(sessionName)){
+            throw new BotCommandException(MESSAGES.getString("incorrectSession",sessionName));
+        }
         //Retrieve APIKey String that is passed as Session Object
         String token = (String) this.sessions.get(sessionName);
         String id = null;

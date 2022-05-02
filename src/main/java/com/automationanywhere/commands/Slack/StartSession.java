@@ -46,13 +46,12 @@ public class StartSession {
 
     ) throws IOException, ParseException {
 
-        String tokenCheck="";
 
         if (this.sessions.containsKey(sessionName)){
-            throw new BotCommandException(MESSAGES.getString("Session name in use"));
+            throw new BotCommandException(MESSAGES.getString("sessionInUse",sessionName));
         }
 
-        tokenCheck = token.getInsecureString();
+        String tokenCheck = token.getInsecureString();
 
         //Call Auth test API to validate token...
         String url = "https://slack.com/api/auth.test";
@@ -60,7 +59,9 @@ public class StartSession {
         Object obj = new JSONParser().parse(output);
         JSONObject jsonObj = (JSONObject) obj;
         String status = jsonObj.get("ok").toString();
-        if(!status.equals("true")){throw new BotCommandException(MESSAGES.getString("incorrectToken", "token"));}
+        if(status.equals("false")){
+            throw new BotCommandException(MESSAGES.getString("authError", jsonObj.get("error").toString()));
+        }
         this.sessions.put(sessionName, tokenCheck);
     }
     public void setSessions(Map<String, Object> sessions) {this.sessions = sessions;}

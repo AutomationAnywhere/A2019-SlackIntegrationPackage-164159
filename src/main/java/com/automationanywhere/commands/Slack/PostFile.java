@@ -65,6 +65,9 @@ public class PostFile {
         if ("".equals(file.trim())) {
             throw new BotCommandException(MESSAGES.getString("emptyInputString", "file"));
         }
+        if (!this.sessions.containsKey(sessionName)){
+            throw new BotCommandException(MESSAGES.getString("incorrectSession",sessionName));
+        }
         //Retrieve APIKey String that is passed as Session Object
         String token = (String) this.sessions.get(sessionName);
         channel = URLEncoder.encode(channel, StandardCharsets.UTF_8);

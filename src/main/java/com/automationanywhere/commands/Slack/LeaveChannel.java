@@ -60,6 +60,10 @@ public class LeaveChannel {
         if ("".equals(channel.trim())) {
             throw new BotCommandException(MESSAGES.getString("emptyInputString", "channel"));
         }
+
+        if (!this.sessions.containsKey(sessionName)){
+            throw new BotCommandException(MESSAGES.getString("incorrectSession",sessionName));
+        }
         //Retrieve APIKey String that is passed as Session Object
         String token = (String) this.sessions.get(sessionName);
         channel = URLEncoder.encode(channel, StandardCharsets.UTF_8);

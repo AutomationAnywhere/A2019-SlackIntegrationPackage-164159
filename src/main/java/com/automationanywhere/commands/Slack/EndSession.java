@@ -20,7 +20,6 @@ public class EndSession {
 
     @Execute
     public void end(@Idx(index = "1", type = TEXT) @Pkg(label = "Session name", default_value_type = STRING, default_value = "Default") @NotEmpty String sessionName){
-        String token = (String) this.sessions.get(sessionName);
         sessions.remove(sessionName);
     }
     public void setSessions(Map<String, Object> sessions) {
