@@ -1,3 +1,7 @@
 build/
 *.lock
 *.class
+*.bin
+*.lock
+*.bin
+*.jar
